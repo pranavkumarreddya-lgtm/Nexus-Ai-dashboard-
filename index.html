@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nexus AI | 3D Portal</title>
+    <style>
+        :root { --primary: #00d2ff; --bg: #020202; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: var(--bg); font-family: 'Poppins', sans-serif; }
+        #canvas-container { position: absolute; width: 100%; height: 100%; z-index: 1; }
+        .login-card { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
+            padding: 50px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
+            text-align: center; color: white; z-index: 10; width: 350px;
+        }
+        .inp { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; box-sizing: border-box; }
+        .btn { width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--primary); color: #000; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div> <div class="login-card">
+        <h1 style="letter-spacing: 5px;">WELCOME</h1>
+        <p style="color: var(--primary); font-size: 12px;">NEXUS AI 3D INTERFACE</p>
+        <input type="text" id="username" placeholder="Identify Name" class="inp">
+        <div id="captcha" style="font-size: 24px; font-weight: bold; margin: 10px; color: var(--primary); letter-spacing: 8px;"></div>
+        <input type="text" id="cap-input" placeholder="Verify Captcha" class="inp">
+        <button class="btn" onclick="check()">INITIALIZE 3D SPACE ⚡</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // 3D Starfield Logic
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsCount = 5000;
+        const posArray = new Float32Array(starsCount * 3);
+        for(let i=0; i<starsCount*3; i++) { posArray[i] = (Math.random() - 0.5) * 2000; }
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const starsMaterial = new THREE.PointsMaterial({ size: 2, color: 0x00d2ff });
+        const starField = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(starField);
+        camera.position.z = 1;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            starField.rotation.y += 0.002;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Login Logic
+        const code = Math.random().toString(36).substring(2, 7).toUpperCase();
+        document.getElementById('captcha').innerText = code;
+        function check() {
+            const user = document.getElementById('username').value;
+            const input = document.getElementById('cap-input').value;
+            if(user && input === code) { window.location.href = 'dashboard.html'; }
+            else { alert("Access Denied"); location.reload(); }
+        }
+    </script>
+</body>
+</html>
